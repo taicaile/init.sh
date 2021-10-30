@@ -7,7 +7,7 @@ eval "$(direnv hook bash)"
 HISTSIZE=2000
 HISTFILESIZE=20000
 
-# bash prompt theme
+# bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
 # shellcheck disable=SC2016,SC1004
 __bash_prompt() {
     local userpart='`export XIT=$? \
@@ -30,3 +30,12 @@ __bash_prompt() {
 
 __bash_prompt
 export PROMPT_DIRTRIM=4
+
+# show python virtual env
+show_virtual_env() {
+  if [[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]]; then
+    echo "($(basename "$VIRTUAL_ENV"))"
+  fi
+}
+export -f show_virtual_env
+PS1='$(show_virtual_env) '$PS1
