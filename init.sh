@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# activate direnv
-eval "$(direnv hook bash)"
+# check if direnv is installed
+if command -v direnv &>/dev/null; then
+  # activate direnv
+  eval "$(direnv hook bash)"
+fi
 
 # update history size
 HISTSIZE=2000
@@ -10,10 +13,10 @@ HISTFILESIZE=20000
 # bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
 # shellcheck disable=SC2016,SC1004
 __bash_prompt() {
-    local userpart='`export XIT=$? \
+  local userpart='`export XIT=$? \
         && [ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} " || echo -n "\[\033[0;32m\]\u " \
         && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;31m\]➜" || echo -n "\[\033[0m\]➜"`'
-    local gitbranch='`\
+  local gitbranch='`\
         export BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null); \
         if [ "${BRANCH}" != "" ]; then \
             echo -n "\[\033[0;36m\](\[\033[1;31m\]${BRANCH}" \
@@ -22,10 +25,10 @@ __bash_prompt() {
                fi \
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
-    local lightblue='\[\033[1;34m\]'
-    local removecolor='\[\033[0m\]'
-    PS1="${userpart} ${lightblue}\w ${gitbranch}${removecolor}\$ "
-    unset -f __bash_prompt
+  local lightblue='\[\033[1;34m\]'
+  local removecolor='\[\033[0m\]'
+  PS1="${userpart} ${lightblue}\w ${gitbranch}${removecolor}\$ "
+  unset -f __bash_prompt
 }
 
 __bash_prompt
@@ -39,3 +42,12 @@ show_virtual_env() {
 }
 export -f show_virtual_env
 PS1='$(show_virtual_env) '$PS1
+
+# show container
+show_container() {
+  if grep -sq 'docker' /proc/1/cgroup; then
+    echo '[Docker]'
+  fi
+}
+export -f show_container
+PS1='$(show_container) '$PS1

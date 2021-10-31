@@ -2,7 +2,7 @@
 
 This script is used to initialize Linux development environment.
 
-Currently, this script do the followings:
+Currently, this script does the followings:
 
 - evaluate `direnv`
 - initialize bash prompt
@@ -11,7 +11,9 @@ Currently, this script do the followings:
 
 ```bash
 wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O  /home/init.sh
+```
 
-# add the following to .bashrc
+```bash
+# add the following to ~/.bashrc
 source /home/init.sh
 ```
