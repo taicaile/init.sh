@@ -50,4 +50,4 @@ show_container() {
   fi
 }
 export -f show_container
-PS1='$(show_container) '$PS1
+PS1='$(show_container)'$PS1
