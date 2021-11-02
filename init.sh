@@ -13,10 +13,10 @@ HISTFILESIZE=20000
 # bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
 # shellcheck disable=SC2016,SC1004
 __bash_prompt() {
-  local userpart='`export XIT=$? \
+  local USER_PART='`export XIT=$? \
         && [ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} " || echo -n "\[\033[0;32m\]\u " \
         && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;31m\]➜" || echo -n "\[\033[0m\]➜"`'
-  local gitbranch='`\
+  local GIT_BRANCH='`\
         export BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null); \
         if [ "${BRANCH}" != "" ]; then \
             echo -n "\[\033[0;36m\](\[\033[1;31m\]${BRANCH}" \
@@ -25,9 +25,9 @@ __bash_prompt() {
                fi \
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
-  local lightblue='\[\033[1;34m\]'
-  local removecolor='\[\033[0m\]'
-  PS1="${userpart} ${lightblue}\w ${gitbranch}${removecolor}\$ "
+  local LIGHT_BLUE='\[\033[1;34m\]'
+  local REMOVE_COLOR='\[\033[0m\]'
+  PS1="${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}${REMOVE_COLOR}\$ "
   unset -f __bash_prompt
 }
 
@@ -50,4 +50,11 @@ show_container() {
   fi
 }
 export -f show_container
-PS1='$(show_container)'$PS1
+PS1='$(show_container)'"$PS1"
+
+show_exit_code() {
+  local e=$?
+  (( e )) && echo "$e |"
+  return $e
+}
+PS1='$(show_exit_code)'"$PS1"
