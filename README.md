@@ -7,7 +7,7 @@ Currently, this script does the followings:
 - evaluate `direnv`
 - initialize bash prompt
 
-## Usuage
+## Usage
 
 ```bash
 wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O  /home/init.sh
@@ -16,4 +16,10 @@ wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O  /home
 ```bash
 # add the following to ~/.bashrc
 source /home/init.sh
+```
+
+```text
+# TODO
+
+- copy all dot files to home directory.
 ```
