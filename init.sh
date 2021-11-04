@@ -13,9 +13,16 @@ HISTFILESIZE=20000
 # bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
 # shellcheck disable=SC2016,SC1004
 __bash_prompt() {
-  local USER_PART='`export XIT=$? \
-        && [ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} " || echo -n "\[\033[0;32m\]\u " \
+  # this line shall place first,
+  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ]&& echo -n "\033[1;91m\] $XIT | "`'
+  # venv
+  # local VENV='``'
+  # docker
+  local CONTAINER='$(grep -sq "docker" /proc/1/cgroup && echo -n "\033[4;32m\]docker➜ ")'
+  # user
+  local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} " || echo -n "\[\033[0;32m\]\u " \
         && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;31m\]➜" || echo -n "\[\033[0m\]➜"`'
+  # git
   local GIT_BRANCH='`\
         export BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null); \
         if [ "${BRANCH}" != "" ]; then \
@@ -27,7 +34,7 @@ __bash_prompt() {
         fi`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
-  PS1="${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}${REMOVE_COLOR}\$ "
+  PS1=" ${EXIT_CODE}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}${REMOVE_COLOR}\$ "
   unset -f __bash_prompt
 }
 
@@ -35,26 +42,11 @@ __bash_prompt
 export PROMPT_DIRTRIM=4
 
 # show python virtual env
-show_virtual_env() {
-  if [[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]]; then
-    echo "($(basename "$VIRTUAL_ENV"))"
-  fi
-}
-export -f show_virtual_env
-PS1='$(show_virtual_env) '$PS1
+# show_virtual_env() {
+#   if [[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]]; then
+#     echo "($(basename "$VIRTUAL_ENV"))"
+#   fi
+# }
 
-# show container
-show_container() {
-  if grep -sq 'docker' /proc/1/cgroup; then
-    echo '[Docker]'
-  fi
-}
-export -f show_container
-PS1='$(show_container)'"$PS1"
-
-show_exit_code() {
-  local e=$?
-  (( e )) && echo "$e |"
-  return $e
-}
-PS1='$(show_exit_code)'"$PS1"
+# export -f show_virtual_env
+# PS1='$(show_virtual_env) '$PS1
