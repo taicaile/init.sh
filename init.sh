@@ -14,14 +14,13 @@ HISTFILESIZE=20000
 # shellcheck disable=SC2016,SC1004
 __bash_prompt() {
   # this line shall place first,
-  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ]&& echo -n "\033[1;91m\] $XIT | "`'
+  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\033[1;91m\] $XIT | "`'
   # venv
   # local VENV='``'
   # docker
   local CONTAINER='$(grep -sq "docker" /proc/1/cgroup && echo -n "\033[4;32m\]docker➜ ")'
   # user
-  local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} " || echo -n "\[\033[0;32m\]\u " \
-        && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;31m\]➜" || echo -n "\[\033[0m\]➜"`'
+  local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
   local GIT_BRANCH='`\
         export BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null); \
