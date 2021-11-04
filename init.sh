@@ -31,9 +31,10 @@ __bash_prompt() {
                fi \
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
+  local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l)"`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
-  PS1=" ${EXIT_CODE}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}${REMOVE_COLOR}\$ "
+  PS1=" ${EXIT_CODE}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}$BG_JOBS${REMOVE_COLOR}\$ "
   unset -f __bash_prompt
 }
 
