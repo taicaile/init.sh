@@ -50,3 +50,13 @@ export PROMPT_DIRTRIM=4
 
 # export -f show_virtual_env
 # PS1='$(show_virtual_env) '$PS1
+
+ssh() {
+  reqsubstr=trycloudflare.com
+  string="$*"
+  if [ -z "${string##*$reqsubstr*}" ]; then
+    /usr/bin/ssh  "$string" || notify-send "title" "Colab SSH Disconnected"
+  else
+    /usr/bin/ssh  "$string"
+  fi
+}
