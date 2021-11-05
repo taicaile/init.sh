@@ -55,7 +55,7 @@ ssh() {
   reqsubstr=trycloudflare.com
   string="$*"
   if [ -z "${string##*$reqsubstr*}" ]; then
-    /usr/bin/ssh  "$string" || notify-send "title" "Colab SSH Disconnected"
+    /usr/bin/ssh  "$string" || notify-send "SSH" "Colab SSH Disconnected"
   else
     /usr/bin/ssh  "$string"
   fi
