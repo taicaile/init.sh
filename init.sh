@@ -32,7 +32,7 @@ __bash_prompt() {
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
   local VENV='`[[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]] \
-        && echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2)) "`'
+        && echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2))\[\033[0m\] "`'
   local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l)"`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
