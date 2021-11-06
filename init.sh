@@ -31,27 +31,22 @@ __bash_prompt() {
                fi \
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
+  local VENV='`[[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]] && echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2))"`'
   local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l)"`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
-  PS1=" ${EXIT_CODE}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}$BG_JOBS${REMOVE_COLOR}\$ "
+  PS1=" ${EXIT_CODE}${VENV}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}$BG_JOBS${REMOVE_COLOR}\$ "
   unset -f __bash_prompt
 }
 
 __bash_prompt
 export PROMPT_DIRTRIM=4
 
-# show python virtual env
-# show_virtual_env() {
-#   if [[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]]; then
-#     echo "($(basename "$VIRTUAL_ENV"))"
-#   fi
-# }
 
-# export -f show_virtual_env
-# PS1='$(show_virtual_env) '$PS1
+# ---- functions ----
 
 ssh() {
+  # send notify if ssh disconnected from trycloudflare
   reqsubstr=trycloudflare.com
   string="$*"
   if [ -z "${string##*$reqsubstr*}" ]; then
