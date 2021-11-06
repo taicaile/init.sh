@@ -31,7 +31,9 @@ __bash_prompt() {
                fi \
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
-  local VENV='`[[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]] && echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2))"`'
+  local VENV='`[[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]] \
+        && { echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2)) "; \
+        export VIRTUAL_ENV_DISABLE_PROMPT;}`'
   local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l)"`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
@@ -42,7 +44,6 @@ __bash_prompt() {
 __bash_prompt
 export PROMPT_DIRTRIM=4
 
-
 # ---- functions ----
 
 ssh() {
@@ -50,8 +51,8 @@ ssh() {
   reqsubstr=trycloudflare.com
   string="$*"
   if [ -z "${string##*$reqsubstr*}" ]; then
-    /usr/bin/ssh  "$string" || notify-send "SSH" "Colab SSH Disconnected"
+    /usr/bin/ssh "$string" || notify-send "SSH" "Colab SSH Disconnected"
   else
-    /usr/bin/ssh  "$string"
+    /usr/bin/ssh "$string"
   fi
 }
