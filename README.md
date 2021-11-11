@@ -22,4 +22,14 @@ source /home/init.sh
 # TODO
 
 - copy all dot files to home directory.
+
+- install docker
+
+- install mysql
+
+- install livepath
+
+- install fail2ban
+
+- add init.sh for all users (system-wide)
 ```
