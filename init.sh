@@ -15,10 +15,8 @@ HISTFILESIZE=20000
 __bash_prompt() {
   # this line shall place first,
   local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\033[1;91m\] $XIT | "`'
-  # venv
-  # local VENV='``'
   # docker
-  local CONTAINER='$(grep -sq "docker" /proc/1/cgroup && echo -n "\033[4;31m\]docker\033[0;31m\] ➜ ")'
+  local CONTAINER=`[ $(ls -ali / | sed '2!d' | awk {'print $1'}) != "2" ] && echo -n "\033[4;31m\]docker\033[0;31m\] ➜ "`
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
@@ -31,6 +29,7 @@ __bash_prompt() {
                fi \
             && echo -n "\[\033[0;36m\]) "; \
         fi`'
+  # venv
   local VENV='`[[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]] \
         && echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2))\[\033[0m\] "`'
   local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l)"`'
