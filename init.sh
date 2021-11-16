@@ -18,7 +18,7 @@ __bash_prompt() {
   # venv
   # local VENV='``'
   # docker
-  local CONTAINER='$(grep -sq "docker" /proc/1/cgroup && echo -n "\033[4;32m\]docker➜ ")'
+  local CONTAINER='$(grep -sq "docker" /proc/1/cgroup && echo -n "\033[4;31m\]docker\033[0;31m\] ➜ ")'
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
