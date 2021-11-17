@@ -46,12 +46,12 @@ __bash_prompt() {
     echo "$model" | xargs echo -n
   }
   # this line shall place first,
-  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\033[1;91m\] $XIT | "`'
+  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;91m\] $XIT | "`'
   # docker
   local MODEL=$(get_model)
   # local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
   local HYPERVISOR=$(systemd-detect-virt | sed 's/none//')
-  local CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\033[4;31m\]($HYPERVISOR)$MODEL\033[0;31m\] ➜ ")
+  local CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;31m\]($HYPERVISOR)$MODEL\[\033[0;31m\] ➜ ")
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
