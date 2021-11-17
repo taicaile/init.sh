@@ -21,15 +21,27 @@ source /home/init.sh
 ```text
 # TODO
 
-- copy all dot files to home directory.
+- install docker option
 
-- install docker
+- install mysql option
 
-- install mysql
+- install livepath option
 
-- install livepath
+- install fail2ban option
 
-- install fail2ban
+- [x] copy all dot files to home directory.
 
-- add init.sh for all users (system-wide)
+- [x] add init.sh for all users (system-wide)
+```
+
+Get product information,
+
+```text
+cat /sys/devices/virtual/dmi/id/sys_vendor
+
+cat /sys/devices/virtual/dmi/id/product_name
+
+cat /sys/devices/virtual/dmi/id/product_version
+
+cat /sys/devices/virtual/dmi/id/product_family
 ```
