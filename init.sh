@@ -10,20 +10,24 @@ fi
 HISTSIZE=2000
 HISTFILESIZE=20000
 
-get_model() {
+# bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
+# shellcheck disable=SC2016,SC1004
+__bash_prompt() {
+  get_model() {
+    local model=""
     if [[ -d "/system/app/" && -d "/system/priv-app" ]]; then
-        model="$(getprop ro.product.brand) $(getprop ro.product.model)"
+        model+="$(getprop ro.product.brand) $(getprop ro.product.model)"
 
     elif [[ -f /sys/devices/virtual/dmi/id/product_name ||
             -f /sys/devices/virtual/dmi/id/product_version ]]; then
-        model="$(< /sys/devices/virtual/dmi/id/product_name)"
+        model+="$(< /sys/devices/virtual/dmi/id/product_name)"
         model+=" $(< /sys/devices/virtual/dmi/id/product_version)"
 
     elif [[ -f /sys/firmware/devicetree/base/model ]]; then
-        model="$(< /sys/firmware/devicetree/base/model)"
+        model+="$(< /sys/firmware/devicetree/base/model)"
 
     elif [[ -f /tmp/sysinfo/model ]]; then
-        model="$(< /tmp/sysinfo/model)"
+        model+="$(< /tmp/sysinfo/model)"
     fi
 
     # Remove dummy OEM info.
@@ -39,17 +43,13 @@ get_model() {
     model="${model//Type1ProductConfigId}"
     model="${model//INVALID}"
     model="${model//�}"
-}
-
-get_model
-
-# bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
-# shellcheck disable=SC2016,SC1004
-__bash_prompt() {
+    echo $model | xargs echo -n
+  }
   # this line shall place first,
   local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\033[1;91m\] $XIT | "`'
   # docker
-  local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$model\033[0;31m\] ➜ ")
+  local MODEL=$(get_model)
+  local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
