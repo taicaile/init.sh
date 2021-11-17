@@ -43,13 +43,14 @@ __bash_prompt() {
     model="${model//Type1ProductConfigId}"
     model="${model//INVALID}"
     model="${model//�}"
-    echo $model | xargs echo -n
+    echo "$model" | xargs echo -n
   }
   # this line shall place first,
   local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\033[1;91m\] $XIT | "`'
   # docker
   local MODEL=$(get_model)
-  local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
+  # local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
+  local CONTAINER=$([[ -n $(systemd-detect-virt | sed 's/none//') ]] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
