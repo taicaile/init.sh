@@ -89,3 +89,11 @@ ssh() {
     /usr/bin/ssh "$string"
   fi
 }
+
+lxcbash() {
+  lxc exec "$1" -- sudo --login --user ubuntu;
+}
+
+dockerbash() {
+  docker exec -it "$1" /bin/bash
+}
