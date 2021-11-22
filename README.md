@@ -9,13 +9,10 @@ Currently, this script does the followings:
 
 ## Usage
 
-```bash
-wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O  /home/init.sh
-```
+To initialize development environment in a container,
 
 ```bash
-# add the following to ~/.bashrc
-source /home/init.sh
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/dev-init.sh | sudo bash
 ```
 
 ```text
