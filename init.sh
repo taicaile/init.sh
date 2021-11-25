@@ -51,7 +51,7 @@ __bash_prompt() {
   local MODEL=$(get_model)
   # local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
   local HYPERVISOR=$(systemd-detect-virt | sed 's/none//')
-  local CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;31m\]($HYPERVISOR)$MODEL\[\033[0;31m\] ➜ ")
+  local CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;33m\]($HYPERVISOR)\[\033[4;31m\]$MODEL\[\033[0;31m\] ➜ ")
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
@@ -67,7 +67,7 @@ __bash_prompt() {
   # venv
   local VENV='`[[ -n "$VIRTUAL_ENV" && -n "$DIRENV_DIR" ]] \
         && echo -n "\[\033[4;33m\]($(basename $VIRTUAL_ENV):$(python3 --version | cut -d\  -f2))\[\033[0m\] "`'
-  local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l)"`'
+  local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l) "`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
   PS1=" ${EXIT_CODE}${VENV}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}$BG_JOBS${REMOVE_COLOR}\$ "
