@@ -56,7 +56,7 @@ __bash_prompt() {
   local HYPERVISOR
   HYPERVISOR=$(systemd-detect-virt | sed 's/none//')
   local CONTAINER
-  CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;33m\]($HYPERVISOR)\[\033[4;31m\]$MODEL\[\033[0;31m\] ➜ ")
+  CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;33m\]($HYPERVISOR) \[\033[4;31m\]$MODEL\[\033[0;31m\] ➜ ")
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u@$HOSTNAME ➜"`'
   # git
