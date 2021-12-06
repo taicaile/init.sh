@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script is used to initialize container envrionment for Python project development.
+# This script is used to initialize container/vps envrionment for Python project development.
 
 # set -e
 
@@ -24,7 +24,7 @@ info "update"
 apt -q update
 
 # info "upgrade"
-# apt -qq upgrade -y
+# apt -q upgrade -y
 
 # install required packages for development
 # -------------------------
@@ -102,7 +102,7 @@ TAEGET_TIMEZONES=("Asia/Brunei" "Asia/Hong_Kong" "Asia/Singapore" "Asia/Manila")
 TAEGET_TIMEZONE=${TAEGET_TIMEZONES[$RANDOM % ${#TAEGET_TIMEZONES[@]} ]}
 
 if [ "$CURRENT_TIMEZONE" != "$TAEGET_TIMEZONE" ]; then
-    sudo timedatectl set-timezone "$TAEGET_TIMEZONE"
-    timedatectl
+    sudo rm -rf /etc/localtime
+    sudo ln -s /usr/share/zoneinfo/"$TAEGET_TIMEZONE" /etc/localtime
     info "Update timezone to $TAEGET_TIMEZONE, local date: $(date)"
 fi
