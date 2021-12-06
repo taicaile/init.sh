@@ -102,6 +102,7 @@ TAEGET_TIMEZONES=("Asia/Brunei" "Asia/Hong_Kong" "Asia/Singapore" "Asia/Manila")
 TAEGET_TIMEZONE=${TAEGET_TIMEZONES[$RANDOM % ${#TAEGET_TIMEZONES[@]} ]}
 
 if [ "$CURRENT_TIMEZONE" != "$TAEGET_TIMEZONE" ]; then
-    echo  "$TAEGET_TIMEZONE" | sudo tee /etc/timezone
+    sudo timedatectl set-timezone "$TAEGET_TIMEZONE"
+    timedatectl
     info "Update timezone to $TAEGET_TIMEZONE, local date: $(date)"
 fi
