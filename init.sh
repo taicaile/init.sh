@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# this script is used to initialize bash prompt, and add some commonly used functions
+
 # check if direnv is installed
 if command -v direnv &>/dev/null; then
   # activate direnv
@@ -16,42 +18,45 @@ __bash_prompt() {
   get_model() {
     local model=""
     if [[ -d "/system/app/" && -d "/system/priv-app" ]]; then
-        model+="$(getprop ro.product.brand) $(getprop ro.product.model)"
+      model+="$(getprop ro.product.brand) $(getprop ro.product.model)"
 
     elif [[ -f /sys/devices/virtual/dmi/id/product_name ||
-            -f /sys/devices/virtual/dmi/id/product_version ]]; then
-        model+="$(< /sys/devices/virtual/dmi/id/product_name)"
-        model+=" $(< /sys/devices/virtual/dmi/id/product_version)"
+      -f /sys/devices/virtual/dmi/id/product_version ]]; then
+      model+="$(</sys/devices/virtual/dmi/id/product_name)"
+      model+=" $(</sys/devices/virtual/dmi/id/product_version)"
 
     elif [[ -f /sys/firmware/devicetree/base/model ]]; then
-        model+="$(< /sys/firmware/devicetree/base/model)"
+      model+="$(</sys/firmware/devicetree/base/model)"
 
     elif [[ -f /tmp/sysinfo/model ]]; then
-        model+="$(< /tmp/sysinfo/model)"
+      model+="$(</tmp/sysinfo/model)"
     fi
 
     # Remove dummy OEM info.
-    model="${model//To be filled by O.E.M.}"
-    model="${model//To Be Filled*}"
-    model="${model//OEM*}"
-    model="${model//Not Applicable}"
-    model="${model//System Product Name}"
-    model="${model//System Version}"
-    model="${model//Undefined}"
-    model="${model//Default string}"
-    model="${model//Not Specified}"
-    model="${model//Type1ProductConfigId}"
-    model="${model//INVALID}"
-    model="${model//�}"
+    model="${model//To be filled by O.E.M./}"
+    model="${model//To Be Filled*/}"
+    model="${model//OEM*/}"
+    model="${model//Not Applicable/}"
+    model="${model//System Product Name/}"
+    model="${model//System Version/}"
+    model="${model//Undefined/}"
+    model="${model//Default string/}"
+    model="${model//Not Specified/}"
+    model="${model//Type1ProductConfigId/}"
+    model="${model//INVALID/}"
+    model="${model//�/}"
     echo "$model" | xargs echo -n
   }
   # this line shall place first,
   local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;91m\] $XIT | "`'
   # docker
-  local MODEL=$(get_model)
+  local MODEL
+  MODEL=$(get_model)
   # local CONTAINER=$([ "$(ls -ali / | sed '2!d' | awk {'print $1'})" != "2" ] && echo -n "\033[4;31m\]$MODEL\033[0;31m\] ➜ ")
-  local HYPERVISOR=$(systemd-detect-virt | sed 's/none//')
-  local CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;33m\]($HYPERVISOR)\[\033[4;31m\]$MODEL\[\033[0;31m\] ➜ ")
+  local HYPERVISOR
+  HYPERVISOR=$(systemd-detect-virt | sed 's/none//')
+  local CONTAINER
+  CONTAINER=$([[ -n "$HYPERVISOR" ]] && echo -n "\[\033[4;33m\]($HYPERVISOR)\[\033[4;31m\]$MODEL@$HOSTNAME\[\033[0;31m\] ➜ ")
   # user
   local USER_PART='`[ ! -z "${GITHUB_USER}" ] && echo -n "\[\033[0;32m\]@${GITHUB_USER} ➜" || echo -n "\[\033[0;32m\]\u ➜"`'
   # git
@@ -91,7 +96,7 @@ ssh() {
 }
 
 lxcbash() {
-  lxc exec "$1" -- sudo --login --user ubuntu;
+  lxc exec "$1" -- sudo --login --user ubuntu
 }
 
 dockerbash() {
