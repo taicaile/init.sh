@@ -84,7 +84,7 @@ export PROMPT_DIRTRIM=4
 
 # ---- functions ----
 
-ssh() {
+sshnotify() {
   # send notify if ssh disconnected from trycloudflare
   reqsubstr=trycloudflare.com
   string="$*"
