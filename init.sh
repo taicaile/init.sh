@@ -12,6 +12,32 @@ fi
 HISTSIZE=2000
 HISTFILESIZE=20000
 
+# get command execution time
+function roundseconds (){
+  # rounds a number to 3 decimal places
+  echo m="$1;h=0.5;scale=4;t=1000;if(m<0) h=-0.5;a=m*t+h;scale=3;a/t;" | bc
+}
+
+function bash_getstarttime (){
+  # places the epoch time in ns into shared memory
+  date +%s.%N >"/dev/shm/${USER}.bashtime.${1}"
+}
+
+function bash_getstoptime (){
+  # reads stored epoch time and subtracts from current
+  local endtime
+  endtime=$(date +%s.%N)
+  local starttime
+  starttime=$(cat /dev/shm/"${USER}".bashtime."${1}")
+  roundseconds $(echo $(eval echo "$endtime - $starttime") | bc)
+}
+
+ROOTPID=$BASHPID
+bash_getstarttime $ROOTPID
+
+PS0='$(bash_getstarttime $ROOTPID)'
+
+
 # bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
 # shellcheck disable=SC2016,SC1004
 __bash_prompt() {
@@ -48,7 +74,7 @@ __bash_prompt() {
     echo "$model" | xargs echo -n
   }
   # this line shall place first,
-  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;91m\] $XIT | "`'
+  local EXIT_CODE='`export XIT=$? && [ "$XIT" -ne "0" ] && echo -n "\[\033[1;91m\] $XIT |"`'
   # docker
   local MODEL
   MODEL=$(get_model)
@@ -75,12 +101,20 @@ __bash_prompt() {
   local BG_JOBS='`[ $(jobs | wc -l) -ne 0 ] && echo -n "\033[0;31m\033[43m$(jobs | wc -l) "`'
   local LIGHT_BLUE='\[\033[1;34m\]'
   local REMOVE_COLOR='\[\033[0m\]'
-  PS1=" ${EXIT_CODE}${VENV}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}$BG_JOBS${REMOVE_COLOR}\$ "
+  local EXECUTION_TIME='\[\033[1;33m\] $(bash_getstoptime $ROOTPID)s\n'
+  PS1="${EXIT_CODE}${EXECUTION_TIME} ${VENV}${CONTAINER}${USER_PART} ${LIGHT_BLUE}\w ${GIT_BRANCH}$BG_JOBS${REMOVE_COLOR}\$ "
   unset -f __bash_prompt
 }
 
+
 __bash_prompt
 export PROMPT_DIRTRIM=4
+
+function runonexit (){
+  rm /dev/shm/"${USER}".bashtime.${ROOTPID}
+}
+
+trap runonexit EXIT
 
 # ---- functions ----
 
