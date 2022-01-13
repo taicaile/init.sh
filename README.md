@@ -9,6 +9,12 @@ Currently, this script does the followings:
 
 ## Usage
 
+To create swap file for Linux automatically,
+
+```bash
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-swap.sh | sudo bash
+```
+
 To initialize development environment for a container,
 
 ```bash
