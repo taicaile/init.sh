@@ -40,7 +40,9 @@ apt -q install -y --no-install-recommends \
     direnv \
     vim \
     systemd \
-    unzip
+    unzip \
+    bc \
+    net-tools
 
 # update .bashrc for all users
 # -------------------------
