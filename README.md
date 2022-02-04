@@ -15,10 +15,16 @@ To create swap file for Linux automatically,
 curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-swap.sh | sudo bash
 ```
 
-To initialize development environment for a container,
+To initialize development environment,
 
 ```bash
-curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/dev-init.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-dev.sh | sudo bash
+```
+
+To update bash prompt and setup timezone,
+
+```bash
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-init.sh | sudo bash
 ```
 
 ```text

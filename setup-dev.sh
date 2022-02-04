@@ -50,6 +50,9 @@ if [ "${UPGRADE_PACKAGES}" = "true" ]; then
 fi
 
 info "commanly used libraries"
+
+apt_install_if_needed sudo
+
 sudo apt -q install -y --no-install-recommends \
   wget \
   curl \
@@ -70,7 +73,12 @@ sudo apt -q install -y --no-install-recommends \
   htop \
   net-tools \
   rsync \
-  ca-certificates
+  ca-certificates \
+  tmux \
+  nano \
+  systemd \
+  bc \
+  net-tools
 
 # install python3
 info "install python3"

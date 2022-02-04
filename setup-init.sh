@@ -5,12 +5,15 @@
 # set -e
 
 info() {
-  printf '\E[32m'; echo "$@"; printf '\E[0m'
+    printf '\E[32m'
+    echo "$@"
+    printf '\E[0m'
 }
 
-
 error() {
-  printf '\E[31m'; echo "$@"; printf '\E[0m'
+    printf '\E[31m'
+    echo "$@"
+    printf '\E[0m'
 }
 
 # -------------------------
@@ -26,24 +29,6 @@ apt -q update
 # info "upgrade"
 # apt -q upgrade -y
 
-# install required packages for development
-# -------------------------
-info "install common libraries"
-apt -q install -y --no-install-recommends \
-    sudo \
-    curl \
-    git \
-    tmux \
-    nano \
-    htop \
-    neofetch \
-    direnv \
-    vim \
-    systemd \
-    unzip \
-    bc \
-    net-tools
-
 # update .bashrc for all users
 # -------------------------
 USERNAME="automatic"
@@ -54,7 +39,7 @@ if [ "${USERNAME}" = "auto" ] || [ "${USERNAME}" = "automatic" ]; then
     # POSSIBLE_USERS=("$(awk -v val=1000 -F ":" '$3==val{print $1}' /etc/passwd)")
     POSSIBLE_USERS=$(grep ":/home/.*:/bin/bash" /etc/passwd | cut -d: -f1 | tr '\r\n' ' ' | awk '{$1=$1};1')
     for CURRENT_USER in ${POSSIBLE_USERS}; do
-        if id -u "${CURRENT_USER}" > /dev/null 2>&1; then
+        if id -u "${CURRENT_USER}" >/dev/null 2>&1; then
             USERNAME=${CURRENT_USER}
             info "found existing user: $USERNAME"
             USERNAME_ARRAY+=("$USERNAME")
@@ -84,7 +69,7 @@ for USERNAME in "${USERNAME_ARRAY[@]}"; do
 
     # update .bashrc
     INIT_SH_PATH="$USER_RC_PATH/init.sh"
-    wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O  "$INIT_SH_PATH"
+    wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O "$INIT_SH_PATH"
 
     # append init.sh to .bashrc
     INIT_HOOK_LINE="source $INIT_SH_PATH"
@@ -95,13 +80,12 @@ for USERNAME in "${USERNAME_ARRAY[@]}"; do
     }
 done
 
-
 # ---- Update Timezone ----
 # -------------------------
 CURRENT_TIMEZONE=$(cat /etc/timezone)
 info "Current time zone: $CURRENT_TIMEZONE, local date: $(date)"
 TAEGET_TIMEZONES=("Asia/Brunei" "Asia/Hong_Kong" "Asia/Singapore" "Asia/Manila")
-TAEGET_TIMEZONE=${TAEGET_TIMEZONES[$RANDOM % ${#TAEGET_TIMEZONES[@]} ]}
+TAEGET_TIMEZONE=${TAEGET_TIMEZONES[$RANDOM % ${#TAEGET_TIMEZONES[@]}]}
 
 if [ "$CURRENT_TIMEZONE" != "$TAEGET_TIMEZONE" ]; then
     sudo rm -rf /etc/localtime
