@@ -32,7 +32,8 @@ function apt_install_if_needed {
 
 # Function to call apt-get if needed
 apt_get_update_if_needed() {
-  if [ ! -d "/var/lib/apt/lists" ] || [ "$(ls /var/lib/apt/lists/ | wc -l)" = "0" ]; then
+  theDir="/var/lib/apt/lists/"
+  if [ ! -d "/var/lib/apt/lists" ] || [ "$(find "$theDir" -maxdepth 1 ! -name "$(basename $theDir)" | wc -l)" = "0" ]; then
     echo "Running apt-get update..."
     sudo apt-get update
   else
