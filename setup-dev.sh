@@ -78,7 +78,8 @@ sudo apt -q install -y --no-install-recommends \
     nano \
     systemd \
     bc \
-    net-tools
+    net-tools \
+    tree
 
 # install python3
 info "install python3"
