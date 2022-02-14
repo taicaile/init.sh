@@ -68,12 +68,12 @@ for USERNAME in "${USERNAME_ARRAY[@]}"; do
     fi
 
     # update .bashrc
-    # shellcheck disable=SC2088
-    INIT_SH_PATH="~/init.sh"
+    INIT_SH_PATH="$USER_RC_PATH/init.sh"
     wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O "$INIT_SH_PATH"
 
     # append init.sh to .bashrc
-    INIT_HOOK_LINE="source $INIT_SH_PATH"
+    # shellcheck disable=SC2088
+    INIT_HOOK_LINE="source ~/init.sh"
     grep -qF -- "$INIT_HOOK_LINE" "$USER_RC" || {
         echo "$INIT_HOOK_LINE" >>"$USER_RC"
         # shellcheck disable=SC1090
