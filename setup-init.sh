@@ -68,7 +68,8 @@ for USERNAME in "${USERNAME_ARRAY[@]}"; do
     fi
 
     # update .bashrc
-    INIT_SH_PATH="$USER_RC_PATH/init.sh"
+    # shellcheck disable=SC2088
+    INIT_SH_PATH="~/init.sh"
     wget https://raw.githubusercontent.com/taicaile/init.sh/master/init.sh -O "$INIT_SH_PATH"
 
     # append init.sh to .bashrc

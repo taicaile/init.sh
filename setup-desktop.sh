@@ -10,6 +10,13 @@
 
 # telegram
 
+# edge
+
 sudo apt -q install -y --no-install-recommends \
     anki \
-    copyq
+    copyq \
+    mpv \
+    peek \
+    flameshot
+
+# then restart
