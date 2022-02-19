@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-# this script is used to initialize bash prompt, and add some commonly used functions
+# initialize bash prompt
+# add some commonly used functions
 
 # check if direnv is installed
 if command -v direnv &>/dev/null; then
   # activate direnv
   eval "$(direnv hook bash)"
+  # `direnv hook bash` returns the string of hook function
 fi
 
 # update history size
@@ -13,30 +15,31 @@ HISTSIZE=2000
 HISTFILESIZE=20000
 
 # get command execution time
-function roundseconds (){
+function roundseconds() {
   # rounds a number to 3 decimal places
   echo m="$1;h=0.5;scale=4;t=1000;if(m<0) h=-0.5;a=m*t+h;scale=3;a/t;" | bc
 }
 
-function bash_getstarttime (){
+function bash_getstarttime() {
   # places the epoch time in ns into shared memory
   date +%s.%N >"/dev/shm/${USER}.bashtime.${1}"
 }
 
-function bash_getstoptime (){
+function bash_getstoptime() {
   # reads stored epoch time and subtracts from current
   local endtime
   endtime=$(date +%s.%N)
   local starttime
   starttime=$(cat /dev/shm/"${USER}".bashtime."${1}")
-  roundseconds $(echo $(eval echo "$endtime - $starttime") | bc)
+  roundseconds "$(echo "$endtime - $starttime" | bc)"
 }
 
 ROOTPID=$BASHPID
 bash_getstarttime $ROOTPID
 
+# set the PS0 variable,
+# shellcheck disable=SC2016,SC2034
 PS0='$(bash_getstarttime $ROOTPID)'
-
 
 # bash prompt theme, ref https://github.com/microsoft/vscode-dev-containers/blob/v0.202.5/containers/ubuntu/.devcontainer/library-scripts/common-debian.sh
 # shellcheck disable=SC2016,SC1004
@@ -106,11 +109,10 @@ __bash_prompt() {
   unset -f __bash_prompt
 }
 
-
 __bash_prompt
 export PROMPT_DIRTRIM=4
 
-function runonexit (){
+function runonexit() {
   rm /dev/shm/"${USER}".bashtime.${ROOTPID}
 }
 
