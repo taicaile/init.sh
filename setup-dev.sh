@@ -62,7 +62,6 @@ sudo apt -q install -y --no-install-recommends \
     vim \
     git \
     htop \
-    plocate \
     unzip \
     zip \
     nano \
@@ -81,6 +80,7 @@ sudo apt -q install -y --no-install-recommends \
     bc \
     net-tools \
     tree
+# plocate
 
 # install python3
 info "install python3"
