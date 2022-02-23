@@ -100,6 +100,8 @@ pip3 install -q pre-commit
 if ! is_installed "markdownlint"; then
     info "install nodejs and markdownlint"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    # shellcheck disable=SC1091,SC1090
+    source "$HOME/.nvm/nvm.sh"
     nvm install --lts
     nvm use --lts
     npm install -g markdownlint-cli
