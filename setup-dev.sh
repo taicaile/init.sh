@@ -41,7 +41,7 @@ apt_get_update_if_needed() {
     fi
 }
 
-UPGRADE_PACKAGES="true"
+UPGRADE_PACKAGES=${UPGRADE_PACKAGES:-"false"}
 # Get to latest versions of all packages
 if [ "${UPGRADE_PACKAGES}" = "true" ]; then
     apt_get_update_if_needed
