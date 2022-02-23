@@ -44,6 +44,7 @@ apt_get_update_if_needed() {
 UPGRADE_PACKAGES=${UPGRADE_PACKAGES:-"false"}
 # Get to latest versions of all packages
 if [ "${UPGRADE_PACKAGES}" = "true" ]; then
+    info "upgrade packages"
     apt_get_update_if_needed
     sudo apt-get -y upgrade --no-install-recommends
     sudo apt-get autoremove -y
