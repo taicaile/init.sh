@@ -49,7 +49,7 @@ if [ "${UPGRADE_PACKAGES}" = "true" ]; then
     sudo apt-get autoremove -y
 fi
 
-info "commanly used libraries"
+info "install commanly used libraries"
 
 apt_install_if_needed sudo
 
@@ -89,13 +89,15 @@ sudo apt -q install -y --no-install-recommends \
     python3-pip \
     python3-dev \
     direnv \
-    pre-commit \
     shellcheck
+
+info "install pre-commit"
+pip3 install -q pre-commit
 
 # install nodejs and markdownlint,
 
 if ! is_installed "markdownlint"; then
-    info "nodejs and markdownlint"
+    info "install nodejs and markdownlint"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
     nvm install --lts
     nvm use --lts
