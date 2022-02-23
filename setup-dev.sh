@@ -85,6 +85,7 @@ sudo apt -q install -y --no-install-recommends \
 info "install python3"
 sudo apt -q install -y --no-install-recommends \
     python3 \
+    python3-distutils \
     python3-venv \
     python3-pip \
     python3-dev \

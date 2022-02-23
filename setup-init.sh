@@ -29,6 +29,12 @@ apt -q update
 # info "upgrade"
 # apt -q upgrade -y
 
+# required packages
+info "install required packages"
+sudo apt -q install -y --no-install-recommends \
+    bc \
+    git
+
 # update .bashrc for all users
 # -------------------------
 USERNAME="automatic"
