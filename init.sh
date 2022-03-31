@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
 
+appendpath () {
+    case ":$PATH:" in
+        *:"$1":*)
+            ;;
+        *)
+            PATH="${PATH:+$PATH:}$1"
+    esac
+}
+
+# set PATH so it includes user's private bin if it exists
+PRIVATE_BINS=("$HOME/bin" "$HOME/.local/bin")
+
+for PRIVATE_BIN in "${PRIVATE_BINS[@]}"; do
+  if [ -d "$PRIVATE_BIN" ]; then
+    # PATH="$PRIVATE_BIN:$PATH"
+    appendpath "$PRIVATE_BIN"
+  fi
+done
+
 # initialize bash prompt
 # add some commonly used functions
 
