@@ -98,9 +98,15 @@ sudo apt -q install -y --no-install-recommends \
     direnv \
     shellcheck
 
+
+LOCAL_BIN_PATH=~/local/bin
+if ! echo "$PATH" | grep -q "${LOCAL_BIN_PATH}"; then
+    PATH=$PATH:$LOCAL_BIN_PATH
+fi
+
 info "install pre-commit"
-# install global space
-sudo pip3 install -q pre-commit
+# pip install at user space
+pip3 install -q pre-commit
 
 # install nodejs
 # info "Install NodeJS"
@@ -135,4 +141,8 @@ if ! is_installed "markdownlint"; then
     else
         error "file:${HOME}/.nvm/nvm.sh does not exists, exit..."
     fi
+else
+    info "markdownlint already installed."
 fi
+
+info "done"
