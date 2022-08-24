@@ -98,28 +98,29 @@ info "install pre-commit"
 pip3 install -q pre-commit
 
 # install nodejs
-info "Install NodeJS"
-sudo apt -q install -y --no-install-recommends \
-    nodejs
+# info "Install NodeJS"
+# sudo apt -q install -y --no-install-recommends \
+#    nodejs \
+#    nvm
 
-info "Install markdownlint"
-npm install -g markdownlint-cli
+# info "Install markdownlint"
+# npm install -g markdownlint-cli
 
 
-# get_sudo_user() {
-#     echo "${SUDO_USER:-$(logname)}"
-# }
+get_sudo_user() {
+    echo "${SUDO_USER:-$(logname)}"
+}
 
-# CURRENT_USER=get_sudo_user
+CALLER_USERNAME=$(get_sudo_user)
+info "Call user: ${CALLER_USERNAME} detected"
 
-# # install nodejs and markdownlint,
-
-# if ! is_installed "markdownlint"; then
-#     info "install nodejs and markdownlint"
-#     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-#     # shellcheck disable=SC1091,SC1090
-#     source "$CURRENT_USER/.nvm/nvm.sh"
-#     nvm install --lts
-#     nvm use --lts
-#     npm install -g markdownlint-cli
-# fi
+# install nodejs and markdownlint,
+if ! is_installed "markdownlint"; then
+    info "install nodejs and markdownlint"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh |  sudo -iu "$CALLER_USERNAME" bash
+    # shellcheck disable=SC1091,SC1090
+    source "/home/$CALLER_USERNAME/.nvm/nvm.sh"
+    nvm install --lts
+    nvm use --lts
+    npm install -g markdownlint-cli
+fi
