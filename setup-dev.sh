@@ -100,10 +100,12 @@ sudo apt -q install -y --no-install-recommends \
 
 # shellcheck disable=SC2088
 # do not expand tilde
-LOCAL_BIN_PATH="~/local/bin"
-if ! echo "$PATH" | grep -q "${LOCAL_BIN_PATH}"; then
+LOCAL_BIN_PATH="~/.local/bin"
+mkdir -p ${LOCAL_BIN_PATH}
+if ! echo "$PATH" | grep -q "${LOCAL_BIN_PATH/#\~/$HOME}"; then
     BASHRC_FILE=~/.bashrc
-    echo "export PATH=\$PATH:~/local/bin" >>"$BASHRC_FILE"
+
+    echo "export PATH=\$PATH:$LOCAL_BIN_PATH" >>"$BASHRC_FILE"
     # shellcheck disable=SC1090,SC1091
     source "$BASHRC_FILE"
 fi
