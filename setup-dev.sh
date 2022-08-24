@@ -100,7 +100,7 @@ sudo apt -q install -y --no-install-recommends \
 
 info "install pre-commit"
 # install global space
-pip3 install -q pre-commit
+sudo -H pip3 install -q pre-commit
 
 # install nodejs
 # info "Install NodeJS"
@@ -126,9 +126,13 @@ if ! is_installed "markdownlint"; then
 
     # shellcheck disable=SC1091,SC1090
     # source "/home/$CALLER_USERNAME/.nvm/nvm.sh"
-    source "${HOME}/.nvm/nvm.sh"
 
-    nvm install --lts
-    nvm use --lts
-    npm install -g markdownlint-cli
+    if [ -d "${HOME}/.nvm/nvm.sh" ]; then
+        source "${HOME}/.nvm/nvm.sh"
+        nvm install --lts
+        nvm use --lts
+        npm install -g markdownlint-cli
+    else
+        error "file:${HOME}/.nvm/nvm.sh does not exists, exit..."
+    fi
 fi
