@@ -12,13 +12,13 @@ Currently, this script does the followings:
 To create swap file for Linux automatically,
 
 ```bash
-curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-swap.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-swap.sh | bash
 ```
 
 To initialize development environment,
 
 ```bash
-curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-dev.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-dev.sh | bash
 ```
 
 To update bash prompt and setup timezone,

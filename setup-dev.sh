@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
+#
 # This script is used to initialize the vps/container for Python development
+#
+
+# exit when any command fails
+set -e
 
 info() {
     printf '\E[32m'
@@ -106,20 +111,23 @@ pip3 install -q pre-commit
 # info "Install markdownlint"
 # npm install -g markdownlint-cli
 
+# get_sudo_user() {
+#     echo "${SUDO_USER:-$(logname)}"
+# }
 
-get_sudo_user() {
-    echo "${SUDO_USER:-$(logname)}"
-}
-
-CALLER_USERNAME=$(get_sudo_user)
-info "Call user: ${CALLER_USERNAME} detected"
+# CALLER_USERNAME=$(get_sudo_user)
+# info "Call user: ${CALLER_USERNAME} detected"
 
 # install nodejs and markdownlint,
 if ! is_installed "markdownlint"; then
     info "install nodejs and markdownlint"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh |  sudo -iu "$CALLER_USERNAME" bash
+    # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh |  sudo -iu "$CALLER_USERNAME" bash
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
     # shellcheck disable=SC1091,SC1090
-    source "/home/$CALLER_USERNAME/.nvm/nvm.sh"
+    # source "/home/$CALLER_USERNAME/.nvm/nvm.sh"
+    source "${HOME}/.nvm/nvm.sh"
+
     nvm install --lts
     nvm use --lts
     npm install -g markdownlint-cli
