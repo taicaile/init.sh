@@ -100,7 +100,7 @@ sudo apt -q install -y --no-install-recommends \
 
 info "install pre-commit"
 # install global space
-pip3 install -q --user pre-commit
+sudo pip3 install -q pre-commit
 
 # install nodejs
 # info "Install NodeJS"
