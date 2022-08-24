@@ -24,7 +24,7 @@ curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-dev.sh 
 To update bash prompt and setup timezone,
 
 ```bash
-curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-init.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/taicaile/init.sh/master/setup-init.sh | bash
 ```
 
 ```text
