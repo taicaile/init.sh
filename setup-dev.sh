@@ -127,7 +127,7 @@ if ! is_installed "markdownlint"; then
     # shellcheck disable=SC1091,SC1090
     # source "/home/$CALLER_USERNAME/.nvm/nvm.sh"
 
-    if [ -d "${HOME}/.nvm/nvm.sh" ]; then
+    if [ -f "${HOME}/.nvm/nvm.sh" ]; then
         source "${HOME}/.nvm/nvm.sh"
         nvm install --lts
         nvm use --lts
