@@ -98,15 +98,19 @@ sudo apt -q install -y --no-install-recommends \
     direnv \
     shellcheck
 
-
-LOCAL_BIN_PATH=~/local/bin
+# shellcheck disable=SC2088
+# do not expand tilde
+LOCAL_BIN_PATH="~/local/bin"
 if ! echo "$PATH" | grep -q "${LOCAL_BIN_PATH}"; then
-    PATH=$PATH:$LOCAL_BIN_PATH
+    BASHRC_FILE=~/.bashrc
+    echo "export PATH=\$PATH:~/local/bin" >>"$BASHRC_FILE"
+    # shellcheck disable=SC1090,SC1091
+    source "$BASHRC_FILE"
 fi
 
 info "install pre-commit"
 # pip install at user space
-pip3 install -q pre-commit
+pip3 install --user pre-commit
 
 # install nodejs
 # info "Install NodeJS"
