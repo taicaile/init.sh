@@ -97,20 +97,29 @@ info "install pre-commit"
 # install global space
 pip3 install -q pre-commit
 
-get_sudo_user() {
-    echo "${SUDO_USER:-$(logname)}"
-}
+# install nodejs
+info "Install NodeJS"
+sudo apt -q install -y --no-install-recommends \
+    nodejs
 
-CURRENT_USER=get_sudo_user
+info "Install markdownlint"
+npm install -g markdownlint-cli
 
-# install nodejs and markdownlint,
 
-if ! is_installed "markdownlint"; then
-    info "install nodejs and markdownlint"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-    # shellcheck disable=SC1091,SC1090
-    source "$CURRENT_USER/.nvm/nvm.sh"
-    nvm install --lts
-    nvm use --lts
-    npm install -g markdownlint-cli
-fi
+# get_sudo_user() {
+#     echo "${SUDO_USER:-$(logname)}"
+# }
+
+# CURRENT_USER=get_sudo_user
+
+# # install nodejs and markdownlint,
+
+# if ! is_installed "markdownlint"; then
+#     info "install nodejs and markdownlint"
+#     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+#     # shellcheck disable=SC1091,SC1090
+#     source "$CURRENT_USER/.nvm/nvm.sh"
+#     nvm install --lts
+#     nvm use --lts
+#     npm install -g markdownlint-cli
+# fi
