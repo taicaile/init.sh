@@ -104,7 +104,6 @@ LOCAL_BIN_PATH="~/.local/bin"
 mkdir -p ${LOCAL_BIN_PATH}
 if ! echo "$PATH" | grep -q "${LOCAL_BIN_PATH/#\~/$HOME}"; then
     BASHRC_FILE=~/.bashrc
-
     echo "export PATH=\$PATH:$LOCAL_BIN_PATH" >>"$BASHRC_FILE"
     # shellcheck disable=SC1090,SC1091
     source "$BASHRC_FILE"
@@ -151,4 +150,4 @@ else
     info "markdownlint already installed."
 fi
 
-info "done"
+info "done, please re-login or run 'source ~/.bashrc'"
