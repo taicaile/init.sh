@@ -1,40 +1,5 @@
 #!/usr/bin/env bash
 
-# This script is used to initialize container/vps envrionment for Python project development.
-
-# set -e
-
-info() {
-    printf '\E[32m'
-    echo "$@"
-    printf '\E[0m'
-}
-
-error() {
-    printf '\E[31m'
-    echo "$@"
-    printf '\E[0m'
-}
-
-# -------------------------
-if [[ $EUID -ne 0 ]]; then # root user
-    error "Please run this script as the root user."
-    exit 1
-fi
-
-# -------------------------
-info "update"
-apt -q update
-
-# info "upgrade"
-# apt -q upgrade -y
-
-# required packages
-info "install required packages"
-sudo apt -q install -y --no-install-recommends \
-    bc \
-    git
-
 # update .bashrc for all users
 # -------------------------
 USERNAME="automatic"
