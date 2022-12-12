@@ -37,13 +37,6 @@ done
 # initialize bash prompt
 # add some commonly used functions
 
-# check if direnv is installed
-if command -v direnv &>/dev/null; then
-  # activate direnv
-  eval "$(direnv hook bash)"
-  # `direnv hook bash` returns the string of hook function
-fi
-
 # update history size
 HISTSIZE=2000
 HISTFILESIZE=20000
