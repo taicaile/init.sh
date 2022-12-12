@@ -3,8 +3,8 @@
 sudo apt install ibus-rime
 
 CONFIG_PATH=~/.config/ibus/rime
-mkdir -p $CONFIG_PATH
+mkdir -p $CONFIG_PATH/build
 cp default.custom.yaml $CONFIG_PATH/
-cp ibus_rime.yaml ~/.config/ibus/rime/build/
-cp luna_pinyin.custom.yaml ~/.config/ibus/rime/
+cp ibus_rime.yaml $CONFIG_PATH/build/
+cp luna_pinyin.custom.yaml $CONFIG_PATH/
 ibus-daemon -drx
