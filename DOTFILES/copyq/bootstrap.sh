@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sudo apt install copyq
+sudo apt install -y copyq
 
 cat << EOF
 
