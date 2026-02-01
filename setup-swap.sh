@@ -1,33 +1,81 @@
 #!/usr/bin/env bash
-# ---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 #
-# RUN THIS SCRIPT VIA: setup-swap.sh, THIS SCRIPT IS USED BY setup-swap.sh
-# READ THE NOTES AND DISCLAIMER WITHIN setup-swap.sh BEFORE RUNNING!
+# setup-swap.sh - Automatic SWAP Setup Script
 #
+# This script automates the creation or recreation of a swap file on a
+# Linux system. It checks for existing swap, removes it if necessary,
+# and creates a new one based on the system's physical RAM.
+#
+# Usage:
+#
+# 1. Remote execution (recommended):
+#    curl -sL <URL>/setup-swap.sh | sudo bash
+#
+# 2. Local execution:
+#    sudo ./setup-swap.sh [options]
+#
+# Options:
+#   -h, --help    Display this help message and exit.
+#
+# Notes:
+# - The script must be run with root privileges (e.g., using sudo).
+# - It creates a swap file named /swapfile.
+# - Swap size is calculated based on these rules:
+#   - RAM <= 2GB:        SWAP = 2 * RAM
+#   - 2GB < RAM < 32GB:  SWAP = RAM + 2GB
+#   - RAM >= 32GB:       SWAP = RAM (or a fixed size like 32GB)
+# --------------------------------------------------------------------------
+
+function show_help() {
+    cat <<-EOF
+	setup-swap.sh - Automatic SWAP Setup Script
+
+	This script automates the creation or recreation of a swap file on a
+	Linux system. It checks for existing swap, removes it if necessary,
+	and creates a new one based on the system's physical RAM.
+
+	Usage:
+	  sudo ./setup-swap.sh [options]
+	  curl -sL <URL>/setup-swap.sh | sudo bash
+
+	Options:
+	  -h, --help    Display this help message and exit.
+
+	Notes:
+	- The script must be run with root privileges (e.g., using sudo).
+	- It creates a swap file named /swapfile.
+	EOF
+}
 
 #remove disable swap, remove it and remove entry from fstab
-removeSwap() {
-    echo "Will remove swap and backup fstab."
-    echo ""
+function remove_swap() {
+    echo -e "Will remove existing swap and backup fstab.\n"
 
     #get the date time to help the scripts
-    backupTime=$(date +%y-%m-%d--%H-%M-%S)
+    local backup_time
+    backup_time=$(date +%y-%m-%d--%H-%M-%S)
 
     #get the swapfile name
-    swapSpace=$(swapon -s | tail -1 |  awk '{print $1}' | cut -d '/' -f 2)
-    #debug: echo $swapSpace
+    local swap_file
+    swap_file=$(swapon --show --noheadings | awk '{print $1}')
 
-    #turn off swapping
-    swapoff "/$swapSpace"
+    if [[ -z "$swap_file" ]]; then
+        echo -e "No active swap file found to remove. Skipping.\n"
+        return
+    fi
 
-    #make backup of fstab
-    cp /etc/fstab /etc/fstab."$backupTime"
+    echo "--> Turning off swap for $swap_file..."
+    swapoff "$swap_file"
 
-    #remove swap space entry from fstab
-    sed -i "/swap/d" /etc/fstab
+    echo "--> Backing up /etc/fstab to /etc/fstab.$backup_time ..."
+    cp /etc/fstab "/etc/fstab.${backup_time}"
 
-    #remove swapfile
-    rm -f "/$swapSpace"
+    echo "--> Removing swap entry from /etc/fstab ..."
+    sed -i -e "\|^${swap_file}|d" /etc/fstab
+
+    echo "--> Removing swap file $swap_file ..."
+    rm -f "$swap_file"
 
     echo ""
     echo "--> Done"
@@ -35,7 +83,7 @@ removeSwap() {
 }
 
 #spinner by: https://www.shellscript.sh/tips/spinner/
-setupSwapSpinner() {
+function setup_swap_spinner() {
   spinner="/|\\-/|\\-"
   while :
   do
@@ -50,165 +98,114 @@ setupSwapSpinner() {
 
 
 #identifies available ram, calculate swap file size and configure
-createSwap() {
-    echo "Will create a swap and setup fstab."
-    echo ""
+function create_swap() {
+    echo -e "Will create a swap file and set up fstab.\n"
 
     #get available physical ram
-    availMemMb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-    #debug: echo $availMemMb
+    local mem_kb
+    mem_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
-    #convert from kb to mb to gb
-    gb=$(awk "BEGIN {print $availMemMb/1024/1024}")
-    #debug: echo $gb
+    #convert from kb to gb and round it
+    local mem_gb
+    mem_gb=$(printf "%.0f\n" "$(echo "$mem_kb/1024/1024" | bc -l)")
 
-    #round the number to nearest gb
-    gb=$(echo "$gb" | awk '{print ($0-int($0)<0.499)?int($0):int($0)+1}')
-    #debug: echo $gb
-
-    echo "-> Available Physical RAM: $gb Gb"
-    echo ""
-    if [ "$gb" -eq 0 ]; then
+    echo -e "--> Available Physical RAM: $mem_gb GB\n"
+    if [ "$mem_gb" -eq 0 ]; then
         echo "Something went wrong! Memory cannot be 0!"
         exit 1;
     fi
 
-    if [ "$gb" -le 2 ]; then
-        echo "   Memory is less than or equal to 2 Gb"
-        let swapSizeGb=$gb*2
-        echo "   -> Set swap size to $swapSizeGb Gb"
+    local swap_size_gb
+    if [ "$mem_gb" -le 2 ]; then
+        echo "   Memory is less than or equal to 2 GB."
+        swap_size_gb=$((mem_gb * 2))
+    elif [ "$mem_gb" -gt 2 ] && [ "$mem_gb" -lt 32 ]; then
+        echo "   Memory is between 2 GB and 32 GB."
+        swap_size_gb=$((mem_gb + 2))
+    else # >= 32
+        echo "   Memory is 32 GB or more."
+        swap_size_gb=$mem_gb
     fi
-    if [ "$gb" -gt 2 -a "$gb" -lt 32 ]; then
-        echo "   Memory is more than 2 Gb and less than to 32 Gb."
-        let swapSizeGb=4+$gb-2
-        echo "   -> Set swap size to $swapSizeGb Gb."
-    fi
-    if [ "$gb" -gt 32 ]; then
-        echo "   Memory is more than or equal to 32 Gb."
-        let swapSizeGb=$gb
-        echo "   -> Set swap size to $swapSizeGb Gb."
-    fi
-    echo ""
 
-    echo "Creating the swap file! This may take a few minutes."
-    echo ""
+    local swap_file_path="/swapfile_${swap_size_gb}GB"
+    echo -e "--> Recommended swap size: $swap_size_gb GB. File will be created at: $swap_file_path\n"
+
+    echo -e "Creating the swap file! This may take a few minutes.\n"
 
     #implement swap file
 
     #start the spinner:
-    setupSwapSpinner &
+    setup_swap_spinner &
 
     #make a note of its Process ID (PID):
-    SPIN_PID=$!
+    local spin_pid=$!
 
     #kill the spinner on any signal, including our own exit.
-    trap "kill -9 $SPIN_PID" $(seq 0 15)
-
-    #convert gb to mb to avoid error: dd-memory-exhausted-by-input-buffer-of-size-bytes
-    let mb=$gb*1024
+    trap "kill -9 $spin_pid &>/dev/null" $(seq 0 15)
 
     #create swap file on root system and set file size to mb variable
-    echo "-> Create swap file."
-    echo ""
-    dd if=/dev/zero of=/swapfile bs=1M count=$mb
+    echo "--> Creating ${swap_size_gb}G swap file at $swap_file_path..."
+    fallocate -l "${swap_size_gb}G" "$swap_file_path" || dd if=/dev/zero of="$swap_file_path" bs=1G count="$swap_size_gb" status=progress
 
     #set read and write permissions
-    echo "-> Set swap file permissions."
-    echo ""
-    chmod 600 /swapfile
+    echo "--> Setting swap file permissions..."
+    chmod 600 "$swap_file_path"
 
     #create swap area
-    echo "-> Create swap area."
-    echo ""
-    mkswap /swapfile
+    echo "--> Formatting swap file..."
+    mkswap "$swap_file_path"
 
     #enable swap file for use
-    echo "-> Turn on swap."
-    echo ""
-    swapon /swapfile
+    echo "--> Turning on swap..."
+    swapon "$swap_file_path"
 
-    echo ""
+    # Stop the spinner
+    kill -9 "$spin_pid" &>/dev/null
+    wait "$spin_pid" 2>/dev/null
+    echo
 
     #update the fstab
-    if grep -q "swap" /etc/fstab; then
-        echo "-> The fstab contains a swap entry."
-        #do nothing
+    if grep -qF -- "$swap_file_path" /etc/fstab; then
+        echo "--> Swap entry for $swap_file_path already exists in /etc/fstab."
     else
-        echo "-> The fstab does not contain a swap entry. Adding an entry."
-        echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+        echo "--> Adding swap entry to /etc/fstab for persistence..."
+        echo "$swap_file_path swap swap defaults 0 0" >> /etc/fstab
     fi
 
     echo ""
     echo "--> Done"
     echo ""
-
-    exit 1
 }
 
 #the main function that is run by the calling script.
-function setupSwapMain() {
+function setup_swap_main() {
     #check if swap is on
-    isSwapOn=$(swapon -s | tail -1)
+    local is_swap_on
+    is_swap_on=$(swapon --show)
 
-    if [[ "$isSwapOn" == "" ]]; then
+    if [[ -z "$is_swap_on" ]]; then
         echo "No swap has been configured! Will create."
         echo ""
 
-        createSwap
+        create_swap
     else
         echo "Swap has been configured. Will remove and then re-create the swap."
         echo ""
 
-        removeSwap
-        createSwap
+        remove_swap
+        create_swap
     fi
 
     echo "Setup swap complete! Check output to confirm everything is good."
 }
 
-# ---------------------------------------------------------------------------
-#
-# This script will create swap file if the swap file does not exist.
-# It will disable the swap file and re-create it if it does exist.
-#
-# Re-create the swap to adjust the size when you change AWS instance types.
-#
-# Based on advice from:
-# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-memory-swap-file/
-#
-# USE THIS SCRIPT AT YOUR OWN RISK AND STUDY THE CODE CAREFULLY.
-#
-# For usage, login as root, run "./setupSwap.sh"
-#
-# Note the following assumptions:
-# - you have enough disk-space for the new swap
-#   - less than 2 Gb RAM - swap size: 2x the amount of RAM
-#   - more than 2 GB RAM, but less than 32 GB - swap size: 4 GB + (RAM – 2 GB)
-#   - 32 GB of RAM or more - swap size: 1x the amount of RAM
-# - you are running as root user
-# - your swap file is called: swapfile
-#
-# Revision history:
-# 2019-04-15 Created (v0.1)
-# 2019-04-15 Read total physical memory using /proc/meminfo instead
-#
-# Tested on:
-# - Ubuntu Server 18.04 (On-Premise and Cloud (AWS)) - 2019-04-15
-# - Amazon Linux 2 Cloud (AWS) - 2019-04-15
-#
-# DISCLAIMER:
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License at <http://www.gnu.org/licenses/> for
-# more details.
-
 #main start
+
+# Handle command-line options
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+    exit 0
+fi
 
 #check permissions
 if [[ $EUID -ne 0 ]]; then
@@ -218,30 +215,46 @@ if [[ $EUID -ne 0 ]]; then
     exit 1;
 fi
 
-
-echo ""
-echo "--------------------------------------------------------------------------"
-echo "setupSwap - creates swap space on your server based on AWS guidelines"
-echo "--------------------------------------------------------------------------"
-echo ""
-echo "This will remove an existing swap file and then create a new one. "
-echo "Please read the disclaimer and review the code before proceeding."
-echo ""
-
-echo -n "Do you want to proceed? (y/n): "; read proceed
-if [ "$proceed" == "y" ]; then
+# Check for required dependencies
+if ! command -v bc &> /dev/null; then
+    echo "The 'bc' command is not found. Attempting to install it..."
+    apt-get update && apt-get install -y bc
     echo ""
-
-    setupSwapMain
-
-else
-
-    echo "You chose to exit. Bye!"
-
 fi
 
-echo ""
-echo "--------------------------------------------------------------------------"
-echo ""
+# Define some colors for better output
+C_BLUE='\033[0;34m'
+C_GREEN='\033[0;32m'
+C_YELLOW='\033[1;33m'
+C_RED='\033[0;31m'
+C_NC='\033[0m' # No Color
+
+echo -e "\n${C_BLUE}--------------------------------------------------------------------------${C_NC}"
+echo -e "${C_BLUE}  Automatic SWAP Setup Script${C_NC}"
+echo -e "${C_BLUE}--------------------------------------------------------------------------${C_NC}\n"
+
+echo -e "This script will automatically create or re-create a swap file (/swapfile).\n"
+
+echo -e "${C_GREEN}The swap file size will be determined based on your system's RAM:${C_NC}"
+echo "  - RAM <= 2GB:      SWAP = 2 * RAM"
+echo "  - 2GB < RAM < 32GB:  SWAP = RAM + 2GB"
+echo -e "  - RAM >= 32GB:     SWAP = RAM (or a fixed size)\n"
+
+echo -e "${C_YELLOW}WARNING: This script will perform the following actions:${C_NC}"
+echo -e "  1. If a swap file already exists, it will be ${C_RED}REMOVED${C_NC}."
+echo "  2. A new swap file will be created, which may take several minutes."
+echo -e "  3. Your /etc/fstab file will be ${C_RED}MODIFIED${C_NC} to make the swap permanent."
+echo -e "     (A backup will be created, e.g., /etc/fstab.YY-MM-DD--HH-MM-SS)\n"
+
+read -p "Do you want to proceed? (y/n): " -r proceed < /dev/tty
+echo
+
+if [[ "$proceed" =~ ^[Yy]$ ]]; then
+    setup_swap_main
+else
+    echo "Operation cancelled by user. Exiting."
+fi
+
+echo -e "\n${C_BLUE}--------------------------------------------------------------------------${C_NC}\n"
 
 exit 0
