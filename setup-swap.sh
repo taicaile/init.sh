@@ -171,7 +171,7 @@ function create_swap() {
         echo "--> Adding swap entry to /etc/fstab for persistence..."
         echo "$swap_file_path swap swap defaults 0 0" >> /etc/fstab
     fi
-
+    # sudo swapon --show
     echo ""
     echo "--> Done"
     echo ""
@@ -210,8 +210,10 @@ fi
 #check permissions
 if [[ $EUID -ne 0 ]]; then
     echo ""
-    echo "This script must be run as root! Login as root, sudo or su."
-    echo ""
+    echo -e "${C_RED}This script must be run as root!${C_NC}"
+    echo "Please run it with 'sudo', for example:"
+    echo "curl ... | sudo bash"
+    echo
     exit 1;
 fi
 
@@ -219,7 +221,11 @@ fi
 if ! command -v bc &> /dev/null; then
     echo "The 'bc' command is not found. Attempting to install it..."
     apt-get update && apt-get install -y bc
-    echo ""
+    if ! command -v bc &> /dev/null; then
+        echo -e "\n${C_RED}Failed to install 'bc'. Please install it manually and re-run the script.${C_NC}"
+        exit 1
+    fi
+    echo
 fi
 
 # Define some colors for better output
